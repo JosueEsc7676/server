@@ -35,7 +35,7 @@ public class FileController {
         model.addAttribute("disponible", true);
 
         model.addAttribute("descripcion", "Aplicación Android institucional - Permite gestionar procesos desde dispositivos móviles.");
-        model.addAttribute("imagen", "/img/android.png");
+        model.addAttribute("imagen", "android.png");
 
         return "android";
     }
@@ -51,7 +51,7 @@ public class FileController {
         model.addAttribute("disponible", true);
 
         model.addAttribute("descripcion", "Sistema de Gestión de Incapacidad de Docentes - Permite administrar incapacidades y generar reportes institucionales.");
-        model.addAttribute("imagen", "/img/programa.png");
+        model.addAttribute("imagen", "programa.png");
 
         return "escritorio";
     }
@@ -64,10 +64,13 @@ public class FileController {
         // Buscar todas las partes que comiencen con el nombre base
         List<ClassPathResource> partes = listarPartes(tipo, nombre);
 
+        // Determinar extensión y limpiar nombre base
+        String extension = tipo.equals("android") ? ".apk" : ".exe";
+        String baseName = nombre.replace(".part", "").replace(".apk", "").replace(".exe", "");
+
         if (!partes.isEmpty()) {
             // Unir las partes en un archivo temporal
-            String extension = tipo.equals("android") ? ".apk" : ".exe";
-            File archivoFinal = File.createTempFile(nombre, extension);
+            File archivoFinal = File.createTempFile(baseName, extension);
 
             try (FileOutputStream fos = new FileOutputStream(archivoFinal)) {
                 for (ClassPathResource parte : partes) {
@@ -78,7 +81,7 @@ public class FileController {
             }
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombre + extension + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + baseName + extension + "\"")
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(new InputStreamResource(new FileInputStream(archivoFinal)));
         }
@@ -89,10 +92,8 @@ public class FileController {
             return ResponseEntity.notFound().build();
         }
 
-        String extension = tipo.equals("android") ? ".apk" : ".exe";
-
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombre + extension + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + baseName + extension + "\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(new InputStreamResource(resource.getInputStream()));
     }
