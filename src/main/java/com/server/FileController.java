@@ -19,12 +19,12 @@ public class FileController {
 
     private static final String UPLOAD_DIR = "static/uploads";
 
-    @GetMapping("/")
-    public String home() {
-        return "index";
-    }
+//    @GetMapping("/")
+//    public String home() {
+//        return "index";
+//    }
 
-    @GetMapping("/android")
+    @GetMapping("/")
     public String android(Model model) {
         String nombreVisible = "MiApp Android";
         String nombrePrograma = "base.apk"; // archivo en src/main/resources/static/uploads/android/
